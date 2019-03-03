@@ -1,0 +1,41 @@
+new Vue({
+    el:".container",/*控制监听的范围*/
+    data:{
+      limitNumber:3,
+      addressList:[],
+      currentIndex:0,
+      shippingMethod:1
+    },
+    mounted:function(){
+      this.$nextTick(function(){
+        this.getAddressList();
+      });
+    },
+    computed:{
+      filterAddress:function(){
+        return this.addressList.slice(0,this.limitNumber);
+      }
+    },/*实时计算*/
+    methods:{
+      getAddressList:function(){
+        var _this=this;
+        this.$http.get("data/address.json").then(function(res){
+          if(res.body.status==0){
+              _this.addressList=res.body.result;
+          }
+        });
+      },
+      setDefault:function(addrId){
+        this.addressList.forEach(function(address,index){
+          if(address.addressId==addrId){
+            address.isDefault=true;
+          }else{
+            address.isDefault=false;
+          }
+        });
+      },
+      delAddress:function(index){
+        this.addressList.splice(index,1);
+      }
+    }
+});
